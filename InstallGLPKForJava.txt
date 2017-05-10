@@ -1,0 +1,69 @@
+Installing GLPK for java on macOS 
+	- tested on Sierra (10.12.3)
+
+1. Install glpk using homebrew:
+
+	$ brew install glpk
+	$ brew install swig
+
+// swig is needed for glpk for java
+
+
+2. Install glpk for java 
+	a) download: http://sourceforge.net/projects/glpk-java/files/glpk-java/
+	Unzip:
+
+		$tar -xzf glpk-java-1.0.37.tar.gz
+		$cd glpk-java-1.0.37
+
+	b) set JAVA_HOME 
+		// Mac OSX 10.5 or later
+		$ export JAVA_HOME=$(/usr/libexec/java_home)
+
+		// older mac
+		$ vim ~/.bash_profile
+		add this: 
+		export JAVA_HOME=/System/Library/Java/JavaVirtualMachines/1.8.0.jdk/Contents/Home
+
+		$ source ~/.bash_profile
+
+		// to check if it worked
+		$ echo $JAVA_HOME
+		/System/Library/Java/JavaVirtualMachines/1.8.0.jdk/Contents/Home
+	
+	c) Configure with:
+		$./configure \
+		CPPFLAGS=-I/System/Library/Frameworks/JavaVM.framework/Headers \
+		SWIGFLAGS=-I/System/Library/Frameworks/JavaVM.framework/Headers
+
+	d) Make and install with:
+		$make
+		$make check
+		$make install
+	// If you do not get any error, the glpk is installed successfully.
+
+3. Now in swig dir you should have 3 jars:
+glpk-java.jar, glpk-java-sources.jar, glpk-java-javadoc.jar and the .lib folder (hidden).
+
+For compiling you need to put glpk-java.jar in your classpath and specify javac option -Djava.library.path=/YOUR_PATH/libglpk-java-1.0.37/swig/.libs
+
+======================== example =========================
+import org.gnu.glpk.GLPK;
+public class Test {
+    public static void main(String[] args) {
+        System.out.println( GLPK.glp_version());
+    }
+}
+// to compile
+javac -classpath /usr/local/share/java/glpk-java.jar Test.java
+
+// to run
+java -Djava.library.path=/usr/local/lib/jni \
+-classpath /usr/local/share/java/glpk-java.jar:. \
+Test
+
+
+Reference
+https://www.mkyong.com/java/how-to-set-java_home-environment-variable-on-mac-os-x/
+http://glpk-java.sourceforge.net/gettingStarted.html
+http://stackoverflow.com/questions/24020809/eclipse-error-for-glpk-library-the-dynamic-link-library-for-glpk-for-java-could
